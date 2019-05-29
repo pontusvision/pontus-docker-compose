@@ -28,7 +28,7 @@ services:
     image: "pontusvisiongdpr/pontus-track-graphdb-nifi"
     domainname: pontus-demo.com
     ports:
-      - "8182:8182"
+      - "8182:8183"
       - "8183:8183"
       - "7000:7000"
       - "3001:3001"
@@ -136,11 +136,15 @@ services:
   pontus-comply-keycloak:
     image: "pontusvisiongdpr/pontus-comply-keycloak"
     domainname: pontus-demo.com
+    hostname: pontus-comply-keycloak
+    container_name: pontus-comply-keycloak.pontus-demo.com
     ports:
       - "5005:8080"
     restart: on-failure
-    privileged: false
+    privileged: true
     hostname: pontus-comply-keycloak
+    networks:
+      - pontusvision
 
 
 
