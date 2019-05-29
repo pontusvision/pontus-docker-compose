@@ -3,18 +3,21 @@ services:
 
   elasticsearch:
     image: "elasticsearch:6.7.2"
-    domainname: pontusvision.com
+    domainname: pontus-demo.com
     ports:
       - "9200:9200"
       - "9300:9300"
     restart: on-failure
     privileged: false
     hostname: elasticsearch
+    container_name: elasticsearch.pontus-demo.com
     environment:
       - node.name=elasticsearch
       - discovery.type=single-node
       - cluster.name=docker-cluster
       - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+    networks:
+      - pontusvision
     ulimits:
       memlock:
         soft: -1
@@ -23,7 +26,7 @@ services:
 
   graphdb-nifi:
     image: "pontusvisiongdpr/pontus-track-graphdb-nifi"
-    domainname: pontusvision.com
+    domainname: pontus-demo.com
     ports:
       - "8182:8182"
       - "8183:8183"
@@ -32,8 +35,11 @@ services:
     restart: on-failure
     privileged: false
     hostname: graphdb-nifi
+    container_name: graphdb-nifi.pontus-demo.com
     depends_on:
       - elasticsearch
+    networks:
+      - pontusvision
     command: >
       /bin/bash -c "
         echo Waiting for elasticsearch service start...;
@@ -49,15 +55,18 @@ services:
 
   pontus-nifi:
     image: "pontusvisiongdpr/pontus-extract-nifi"
-    domainname: pontusvision.com
+    domainname: pontus-demo.com
     ports:
       - "8080:8080"
       - "5006:5006"
     restart: on-failure
     privileged: false
     hostname: pontus-nifi
+    container_name: pontus-nifi.pontus-demo.com
     depends_on:
       - graphdb-nifi
+    networks:
+      - pontusvision
     command: >
       /bin/bash -c "
         echo Waiting for graphdb-nifi service start...;
@@ -72,12 +81,13 @@ services:
 
   pontus-formio-mongodb:
     image: "pontusvisiongdpr/pontus-formio-mongodb"
-    domainname: pontusvision.com
+    domainname: pontus-demo.com
     ports:
       - "27017:27017"
     restart: on-failure
     privileged: false
     hostname: pontus-formio-mongodb
+    container_name: pontus-formio-mongodb.pontus-demo.com
     command: >
       /bin/bash -c "
         docker-entrypoint.sh mongod &
@@ -89,18 +99,21 @@ services:
         fi
         wait %1
       "
+    networks:
+      - pontusvision
 
 
 
   pontus-formio:
     image: "pontusvisiongdpr/pontus-formio"
-    domainname: pontusvision.com
+    domainname: pontus-demo.com
     ports:
       - "3005:3005"
       - "8085:8085"
     restart: on-failure
     privileged: true
     hostname: pontus-formio
+    container_name: pontus-formio.pontus-demo.com
     depends_on:
       - pontus-formio-mongodb
     command: >
@@ -115,17 +128,47 @@ services:
         /opt/pontus/pontus-formio/current/bin/run-gui.sh
         #while [[ true ]]; do sleep 1; done
       "
+    networks:
+      - pontusvision
 
+
+
+  pontus-comply-keycloak:
+    image: "pontusvisiongdpr/pontus-comply-keycloak"
+    domainname: pontus-demo.com
+    ports:
+      - "5005:8080"
+    restart: on-failure
+    privileged: false
+    hostname: pontus-comply-keycloak
 
 
 
 
   pontus-lgpd:
     image: "pontusvisiongdpr/pontus-comply-nginx-lgpd"
-    domainname: pontusvision.com
+    domainname: pontus-demo.com
     ports:
       - "18443:18443"
     restart: on-failure
     privileged: true
     hostname: pontus-lgpd
+    container_name: pontus-lgpd.pontus-demo.com
+    networks:
+      - pontusvision
+    depends_on:
+      - pontus-formio-mongodb
+      - pontus-formio
+      - pontus-nifi
+      - pontus-comply-keycloak
 
+    command: >
+      /bin/bash -c "
+         getent hosts pontus-formio.pontus-demo.com
+         getent hosts pontus-nifi.pontus-demo.com
+         getent hosts pontus-comply-keycloak.pontus-demo.com
+         nginx-debug -g 'daemon off;'
+      "
+
+networks:
+  pontusvision:
