@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
 
   elasticsearch:
@@ -32,6 +32,7 @@ services:
       - "8183:8183"
       - "7000:7000"
       - "3001:3001"
+      - "5009:5009"
     restart: on-failure
     privileged: false
     hostname: graphdb-nifi
@@ -59,10 +60,21 @@ services:
     ports:
       - "8080:8080"
       - "5006:5006"
+      - "5007:5007"
     restart: on-failure
     privileged: false
     hostname: pontus-nifi
     container_name: pontus-nifi.pontus-demo.com
+    secrets:
+      - SALESFORCE_CLIENT_ID
+      - SALESFORCE_CLIENT_SECRET
+      - SALESFORCE_USERNAME
+      - SALESFORCE_PASSWORD
+      - OFFICE_365_AUTH_CLIENT_SECRET
+      - OFFICE_365_AUTH_CLIENT_ID
+      - OFFICE_365_AUTH_TENANT_ID
+
+
     depends_on:
       - graphdb-nifi
     networks:
@@ -177,40 +189,7 @@ services:
          getent hosts pontus-extract-discovery-dataset
          getent hosts pontus-extract-discovery-transformation
          getent hosts pontus-extract-discovery-preparation
-         java  -Dserver.port=8888  \
-               -Dspring.profiles.active=standalone \
-               -Dspring.mvc.favicon.enabled=false \
-               -Dserver.compression.enabled=true \
-               -Dserver.compression.mime-types=text/plain,application/json \
-               -Dspring.mvc.async.request-timeout=300000 \
-               -Dservice.documentation=false \
-               -Dservice.documentation.name='Talend Data Preparation - API' \
-               -Dservice.documentation.description='This service exposes high level services that may involve services orchestration.' \
-               -Dservice.paths=api \
-               -Ddataset.records.limit=30000 \
-               -Ddataset.local.file.size.limit=2000000000 \
-               -Ddataset.list.limit=10 \
-               -Ddataset.imports=local \
-               -Ddataset.service.url=http://pontus-extract-discovery-dataset:8288/ \
-               -Dtransformation.service.url=http://pontus-extract-discovery-transformation:8388/ \
-               -Dpreparation.service.url=http://pontus-extract-discovery-preparation:8188/ \
-               -Ddataset.metadata.store=file \
-               -Dpreparation.store=file \
-               -Duser.data.store=file \
-               -Dfolder.store=file \
-               -Dupgrade.store=file \
-               -Ddataset.metadata.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/datasets/metadata/ \
-               -Dpreparation.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/preparations/ \
-               -Duser.data.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/users/ \
-               -Dfolder.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/folders/ \
-               -Dupgrade.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/upgrade \
-               -Dcontent-service.store=local \
-               -Dcontent-service.store.local.path=/tmp/AppData/Roaming/Talend/dataprep/ \
-               -Dpreparation.store.remove.hours=24 \
-               -DluceneIndexStrategy=singleton \
-               -Ddataquality.indexes.file.location=/tmp/AppData/Roaming/Talend/dataprep/data-quality/2.5.1/org.talend.dataquality.semantic \
-               -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008 \
-               -jar /opt/pontus-extract/discovery/lib/dataprep-api.jar
+         java  -Dserver.port=8888  -Dspring.profiles.active=standalone -Dspring.mvc.favicon.enabled=false -Dserver.compression.enabled=true -Dserver.compression.mime-types=text/plain,application/json -Dspring.mvc.async.request-timeout=300000 -Dservice.documentation=false -Dservice.documentation.name='Talend Data Preparation - API' -Dservice.documentation.description='This service exposes high level services that may involve services orchestration.' -Dservice.paths=api -Ddataset.records.limit=30000 -Ddataset.local.file.size.limit=2000000000 -Ddataset.list.limit=10 -Ddataset.imports=local -Ddataset.service.url=http://pontus-extract-discovery-dataset:8288/ -Dtransformation.service.url=http://pontus-extract-discovery-transformation:8388/ -Dpreparation.service.url=http://pontus-extract-discovery-preparation:8188/ -Ddataset.metadata.store=file -Dpreparation.store=file -Duser.data.store=file -Dfolder.store=file -Dupgrade.store=file -Ddataset.metadata.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/datasets/metadata/ -Dpreparation.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/preparations/ -Duser.data.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/users/ -Dfolder.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/folders/ -Dupgrade.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/upgrade -Dcontent-service.store=local -Dcontent-service.store.local.path=/tmp/AppData/Roaming/Talend/dataprep/ -Dpreparation.store.remove.hours=24 -DluceneIndexStrategy=singleton -Ddataquality.indexes.file.location=/tmp/AppData/Roaming/Talend/dataprep/data-quality/2.5.1/org.talend.dataquality.semantic -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008 -jar /opt/pontus-extract/discovery/lib/dataprep-api.jar
       "
   
 
@@ -232,40 +211,7 @@ services:
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/users
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/folders
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/upgrade
-         java  -Dserver.port=8388  \
-               -Dspring.profiles.active=standalone \
-               -Dspring.mvc.favicon.enabled=false \
-               -Dserver.compression.enabled=true \
-               -Dserver.compression.mime-types=text/plain,application/json \
-               -Dspring.mvc.async.request-timeout=300000 \
-               -Dservice.documentation=false \
-               -Dservice.documentation.name='Talend Data Preparation - API' \
-               -Dservice.documentation.description='This service exposes high level services that may involve services orchestration.' \
-               -Dservice.paths=api \
-               -Ddataset.records.limit=30000 \
-               -Ddataset.local.file.size.limit=2000000000 \
-               -Ddataset.list.limit=10 \
-               -Ddataset.imports=local \
-               -Ddataset.service.url=http://pontus-extract-discovery-dataset:8288/ \
-               -Dtransformation.service.url=http://pontus-extract-discovery-transformation:8388/ \
-               -Dpreparation.service.url=http://pontus-extract-discovery-preparation:8188/ \
-               -Ddataset.metadata.store=file \
-               -Dpreparation.store=file \
-               -Duser.data.store=file \
-               -Dfolder.store=file \
-               -Dupgrade.store=file \
-               -Ddataset.metadata.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/datasets/metadata/ \
-               -Dpreparation.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/preparations/ \
-               -Duser.data.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/users/ \
-               -Dfolder.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/folders/ \
-               -Dupgrade.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/upgrade \
-               -Dcontent-service.store=local \
-               -Dcontent-service.store.local.path=/tmp/AppData/Roaming/Talend/dataprep/ \
-               -Dpreparation.store.remove.hours=24 \
-               -DluceneIndexStrategy=singleton \
-               -Ddataquality.indexes.file.location=/tmp/AppData/Roaming/Talend/dataprep/data-quality/2.5.1/org.talend.dataquality.semantic \
-               -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008 \
-               -jar /opt/pontus-extract/discovery/lib/dataprep-transformation.jar
+         java  -Dserver.port=8388  -Dspring.profiles.active=standalone -Dspring.mvc.favicon.enabled=false -Dserver.compression.enabled=true -Dserver.compression.mime-types=text/plain,application/json -Dspring.mvc.async.request-timeout=300000 -Dservice.documentation=false -Dservice.documentation.name='Talend Data Preparation - API' -Dservice.documentation.description='This service exposes high level services that may involve services orchestration.' -Dservice.paths=api -Ddataset.records.limit=30000 -Ddataset.local.file.size.limit=2000000000 -Ddataset.list.limit=10 -Ddataset.imports=local -Ddataset.service.url=http://pontus-extract-discovery-dataset:8288/ -Dtransformation.service.url=http://pontus-extract-discovery-transformation:8388/ -Dpreparation.service.url=http://pontus-extract-discovery-preparation:8188/ -Ddataset.metadata.store=file -Dpreparation.store=file -Duser.data.store=file -Dfolder.store=file -Dupgrade.store=file -Ddataset.metadata.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/datasets/metadata/ -Dpreparation.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/preparations/ -Duser.data.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/users/ -Dfolder.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/folders/ -Dupgrade.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/upgrade -Dcontent-service.store=local -Dcontent-service.store.local.path=/tmp/AppData/Roaming/Talend/dataprep/ -Dpreparation.store.remove.hours=24 -DluceneIndexStrategy=singleton -Ddataquality.indexes.file.location=/tmp/AppData/Roaming/Talend/dataprep/data-quality/2.5.1/org.talend.dataquality.semantic -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008 -jar /opt/pontus-extract/discovery/lib/dataprep-transformation.jar
       "
   
 
@@ -287,40 +233,7 @@ services:
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/users
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/folders
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/upgrade
-         java  -Dserver.port=8288  \
-               -Dspring.profiles.active=standalone \
-               -Dspring.mvc.favicon.enabled=false \
-               -Dserver.compression.enabled=true \
-               -Dserver.compression.mime-types=text/plain,application/json \
-               -Dspring.mvc.async.request-timeout=300000 \
-               -Dservice.documentation=false \
-               -Dservice.documentation.name='Talend Data Preparation - API' \
-               -Dservice.documentation.description='This service exposes high level services that may involve services orchestration.' \
-               -Dservice.paths=api \
-               -Ddataset.records.limit=30000 \
-               -Ddataset.local.file.size.limit=2000000000 \
-               -Ddataset.list.limit=10 \
-               -Ddataset.imports=local \
-               -Ddataset.service.url=http://pontus-extract-discovery-dataset:8288/ \
-               -Dtransformation.service.url=http://pontus-extract-discovery-transformation:8388/ \
-               -Dpreparation.service.url=http://pontus-extract-discovery-preparation:8188/ \
-               -Ddataset.metadata.store=file \
-               -Dpreparation.store=file \
-               -Duser.data.store=file \
-               -Dfolder.store=file \
-               -Dupgrade.store=file \
-               -Ddataset.metadata.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/datasets/metadata/ \
-               -Dpreparation.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/preparations/ \
-               -Duser.data.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/users/ \
-               -Dfolder.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/folders/ \
-               -Dupgrade.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/upgrade \
-               -Dcontent-service.store=local \
-               -Dcontent-service.store.local.path=/tmp/AppData/Roaming/Talend/dataprep/ \
-               -Dpreparation.store.remove.hours=24 \
-               -DluceneIndexStrategy=singleton \
-               -Ddataquality.indexes.file.location=/tmp/AppData/Roaming/Talend/dataprep/data-quality/2.5.1/org.talend.dataquality.semantic \
-               -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008 \
-               -jar /opt/pontus-extract/discovery/lib/dataprep-dataset.jar
+         java  -Dserver.port=8288  -Dspring.profiles.active=standalone -Dspring.mvc.favicon.enabled=false -Dserver.compression.enabled=true -Dserver.compression.mime-types=text/plain,application/json -Dspring.mvc.async.request-timeout=300000 -Dservice.documentation=false -Dservice.documentation.name='Talend Data Preparation - API' -Dservice.documentation.description='This service exposes high level services that may involve services orchestration.' -Dservice.paths=api -Ddataset.records.limit=30000 -Ddataset.local.file.size.limit=2000000000 -Ddataset.list.limit=10 -Ddataset.imports=local -Ddataset.service.url=http://pontus-extract-discovery-dataset:8288/ -Dtransformation.service.url=http://pontus-extract-discovery-transformation:8388/ -Dpreparation.service.url=http://pontus-extract-discovery-preparation:8188/ -Ddataset.metadata.store=file -Dpreparation.store=file -Duser.data.store=file -Dfolder.store=file -Dupgrade.store=file -Ddataset.metadata.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/datasets/metadata/ -Dpreparation.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/preparations/ -Duser.data.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/users/ -Dfolder.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/folders/ -Dupgrade.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/upgrade -Dcontent-service.store=local -Dcontent-service.store.local.path=/tmp/AppData/Roaming/Talend/dataprep/ -Dpreparation.store.remove.hours=24 -DluceneIndexStrategy=singleton -Ddataquality.indexes.file.location=/tmp/AppData/Roaming/Talend/dataprep/data-quality/2.5.1/org.talend.dataquality.semantic -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008 -jar /opt/pontus-extract/discovery/lib/dataprep-dataset.jar
       "
   
 
@@ -342,44 +255,8 @@ services:
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/users
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/folders
          mkdir -p /tmp/AppData/Roaming/Talend/dataprep/store/upgrade
-         java  -Dserver.port=8188  \
-               -Dspring.profiles.active=standalone \
-               -Dspring.mvc.favicon.enabled=false \
-               -Dserver.compression.enabled=true \
-               -Dserver.compression.mime-types=text/plain,application/json \
-               -Dspring.mvc.async.request-timeout=300000 \
-               -Dservice.documentation=false \
-               -Dservice.documentation.name='Talend Data Preparation - API' \
-               -Dservice.documentation.description='This service exposes high level services that may involve services orchestration.' \
-               -Dservice.paths=api \
-               -Ddataset.records.limit=30000 \
-               -Ddataset.local.file.size.limit=2000000000 \
-               -Ddataset.list.limit=10 \
-               -Ddataset.imports=local \
-               -Ddataset.service.url=http://pontus-extract-discovery-dataset:8288/ \
-               -Dtransformation.service.url=http://pontus-extract-discovery-transformation:8388/ \
-               -Dpreparation.service.url=http://pontus-extract-discovery-preparation:8188/ \
-               -Ddataset.metadata.store=file \
-               -Dpreparation.store=file \
-               -Duser.data.store=file \
-               -Dfolder.store=file \
-               -Dupgrade.store=file \
-               -Ddataset.metadata.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/datasets/metadata/ \
-               -Dpreparation.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/preparations/ \
-               -Duser.data.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/users/ \
-               -Dfolder.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/folders/ \
-               -Dupgrade.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/upgrade \
-               -Dcontent-service.store=local \
-               -Dcontent-service.store.local.path=/tmp/AppData/Roaming/Talend/dataprep/ \
-               -Dpreparation.store.remove.hours=24 \
-               -DluceneIndexStrategy=singleton \
-               -Ddataquality.indexes.file.location=/tmp/AppData/Roaming/Talend/dataprep/data-quality/2.5.1/org.talend.dataquality.semantic \
-               -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008 \
-               -jar /opt/pontus-extract/discovery/lib/dataprep-preparation.jar
-      "
-  
-
-
+         java  -Dserver.port=8188  -Dspring.profiles.active=standalone -Dspring.mvc.favicon.enabled=false -Dserver.compression.enabled=true -Dserver.compression.mime-types=text/plain,application/json -Dspring.mvc.async.request-timeout=300000 -Dservice.documentation=false -Dservice.documentation.name='Talend Data Preparation - API' -Dservice.documentation.description='This service exposes high level services that may involve services orchestration.' -Dservice.paths=api -Ddataset.records.limit=30000 -Ddataset.local.file.size.limit=2000000000 -Ddataset.list.limit=10 -Ddataset.imports=local -Ddataset.service.url=http://pontus-extract-discovery-dataset:8288/ -Dtransformation.service.url=http://pontus-extract-discovery-transformation:8388/ -Dpreparation.service.url=http://pontus-extract-discovery-preparation:8188/ -Ddataset.metadata.store=file -Dpreparation.store=file -Duser.data.store=file -Dfolder.store=file -Dupgrade.store=file -Ddataset.metadata.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/datasets/metadata/ -Dpreparation.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/preparations/ -Duser.data.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/users/ -Dfolder.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/folders/ -Dupgrade.store.file.location=/tmp/AppData/Roaming/Talend/dataprep/store/upgrade -Dcontent-service.store=local -Dcontent-service.store.local.path=/tmp/AppData/Roaming/Talend/dataprep/ -Dpreparation.store.remove.hours=24 -DluceneIndexStrategy=singleton -Ddataquality.indexes.file.location=/tmp/AppData/Roaming/Talend/dataprep/data-quality/2.5.1/org.talend.dataquality.semantic -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5008 -jar /opt/pontus-extract/discovery/lib/dataprep-preparation.jar
+      " 
 
 
   pontus-lgpd:
@@ -412,3 +289,22 @@ services:
 
 networks:
   pontusvision:
+
+
+secrets:
+  SALESFORCE_CLIENT_ID:
+    file: secrets/SALESFORCE_CLIENT_ID
+  SALESFORCE_CLIENT_SECRET:
+    file:  secrets/SALESFORCE_CLIENT_SECRET
+  SALESFORCE_USERNAME:
+    file: secrets/SALESFORCE_USERNAME
+  SALESFORCE_PASSWORD:
+    file: secrets/SALESFORCE_PASSWORD
+  OFFICE_365_AUTH_CLIENT_SECRET:
+    file: secrets/OFFICE_365_AUTH_CLIENT_SECRET
+  OFFICE_365_AUTH_CLIENT_ID:
+    file: secrets/OFFICE_365_AUTH_CLIENT_ID
+  OFFICE_365_AUTH_TENANT_ID:
+    file: secrets/OFFICE_365_AUTH_TENANT_ID
+
+
