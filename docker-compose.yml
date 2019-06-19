@@ -1,6 +1,15 @@
 version: '3.7'
 services:
 
+  spacyapi:
+    image: jgontrum/spacyapi:en_v2
+    hostname: spacyapi
+    domainname: pontus-demo.com
+    ports:
+      - "8085:80"
+    restart: on-failure
+
+
   elasticsearch:
     image: "elasticsearch:6.7.2"
     domainname: pontus-demo.com
@@ -73,6 +82,9 @@ services:
       - OFFICE_365_AUTH_CLIENT_SECRET
       - OFFICE_365_AUTH_CLIENT_ID
       - OFFICE_365_AUTH_TENANT_ID
+      - WATSON_USER_NAME
+      - WATSON_PASSWORD
+      - GOOGLE_CREDS_JSON
 
 
     depends_on:
@@ -306,5 +318,11 @@ secrets:
     file: secrets/OFFICE_365_AUTH_CLIENT_ID
   OFFICE_365_AUTH_TENANT_ID:
     file: secrets/OFFICE_365_AUTH_TENANT_ID
+  WATSON_USER_NAME:
+    file: secrets/WATSON_USER_NAME
+  WATSON_PASSWORD:
+    file: secrets/WATSON_PASSWORD
+  GOOGLE_CREDS_JSON:
+    file: secrets/GOOGLE_CREDS_JSON
 
 
