@@ -6,6 +6,9 @@ services:
     hostname: spacyapi
     domainname: pontus-demo.com
     restart: on-failure
+    container_name: spacyapi.pontus-demo.com
+    networks:
+      - pontusvision
 
 
   elasticsearch:
@@ -87,10 +90,12 @@ services:
 
     depends_on:
       - graphdb-nifi
+      - spacyapi
     networks:
       - pontusvision
     entrypoint: >
       /bin/bash -c "
+        getent hosts spacyapi
         echo Waiting for graphdb-nifi service start...;
         while [[ `/usr/bin/curl -s  -H 'Content-Type: application/json' -X POST -d '' http://graphdb-nifi:3001/home/vertex_labels` != *Object.Data_Source* ]] ; do
           sleep 1;
