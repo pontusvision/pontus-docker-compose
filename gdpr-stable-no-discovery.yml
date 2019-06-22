@@ -35,7 +35,7 @@ services:
 
 
   graphdb-nifi:
-    image: "pontusvisiongdpr/pontus-track-graphdb-nifi"
+    image: "pontusvisiongdpr/pontus-track-graphdb-nifi:gdpr-stable"
     domainname: pontus-demo.com
     ports:
       - "8182:8183"
@@ -65,7 +65,7 @@ services:
 
 
   pontus-nifi:
-    image: "pontusvisiongdpr/pontus-extract-nifi"
+    image: "pontusvisiongdpr/pontus-extract-nifi:gdpr-stable"
     domainname: pontus-demo.com
     ports:
       - "8080:8080"
@@ -109,7 +109,7 @@ services:
 
 
   pontus-formio-mongodb:
-    image: "pontusvisiongdpr/pontus-formio-mongodb"
+    image: "pontusvisiongdpr/pontus-formio-mongodb:gdpr-stable"
     domainname: pontus-demo.com
     ports:
       - "27017:27017"
@@ -134,7 +134,7 @@ services:
 
 
   pontus-formio:
-    image: "pontusvisiongdpr/pontus-formio"
+    image: "pontusvisiongdpr/pontus-formio:gdpr-stable"
     domainname: pontus-demo.com
     ports:
       - "3005:3005"
@@ -163,7 +163,7 @@ services:
 
 
   pontus-comply-keycloak:
-    image: "pontusvisiongdpr/pontus-comply-keycloak"
+    image: "pontusvisiongdpr/pontus-comply-keycloak:gdpr-stable"
     domainname: pontus-demo.com
     hostname: pontus-comply-keycloak
     container_name: pontus-comply-keycloak.pontus-demo.com
@@ -178,7 +178,7 @@ services:
 
 
   pontus-lgpd:
-    image: "pontusvisiongdpr/pontus-comply-nginx-lgpd"
+    image: "pontusvisiongdpr/pontus-comply-nginx-lgpd:gdpr-stable"
     domainname: pontus-demo.com
     ports:
       - "18443:18443"
