@@ -109,7 +109,7 @@ services:
 
 
   pontus-formio-mongodb:
-    image: "pontusvisiongdpr/pontus-formio-mongodb"
+    image: "pontusvisiongdpr/pontus-lgpd-formio-mongodb"
     domainname: pontus-demo.com
     ports:
       - "27017:27017"
@@ -134,7 +134,7 @@ services:
 
 
   pontus-formio:
-    image: "pontusvisiongdpr/pontus-formio"
+    image: "pontusvisiongdpr/pontus-lgpd-formio"
     domainname: pontus-demo.com
     ports:
       - "3005:3005"
