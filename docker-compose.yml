@@ -171,7 +171,6 @@ services:
       - "5005:8080"
     restart: on-failure
     privileged: true
-    hostname: pontus-comply-keycloak
     networks:
       - pontusvision
 
@@ -187,7 +186,6 @@ services:
       - "5008:5008"
     restart: on-failure
     privileged: true
-    hostname: pontus-extract-discovery-backend
     networks:
       - pontusvision
 
@@ -222,7 +220,6 @@ services:
     container_name: pontus-extract-discovery-transformation.pontus-demo.com
     restart: on-failure
     privileged: true
-    hostname: pontus-extract-discovery-transformation
     networks:
       - pontusvision
 
@@ -249,7 +246,6 @@ services:
     container_name: pontus-extract-discovery-dataset.pontus-demo.com
     restart: on-failure
     privileged: true
-    hostname: pontus-extract-discovery-dataset
     networks:
       - pontusvision
 
@@ -276,7 +272,6 @@ services:
     container_name: pontus-extract-discovery-preparation.pontus-demo.com
     restart: on-failure
     privileged: true
-    hostname: pontus-extract-discovery-preparation
     networks:
       - pontusvision
 
@@ -323,7 +318,33 @@ services:
          echo Waiting for pontus-nifi service start just to reduce the number of JVMs starting at once...;
          nginx -g 'daemon off;'
       "
-  
+
+  pontus-timescaledb:
+    image: "pontusvisiongdpr/timescaledb"
+    domainname: pontus-demo.com
+    restart: on-failure
+    hostname: pontus-timescaledb
+    container_name: pontus-timescaledb.pontus-demo.com
+    networks:
+      - pontusvision
+    env_file:
+      - secrets/PONTUS-TIMESCALEDB
+
+
+  pontus-grafana:
+    image: "grafana/grafana:6.2.4"
+    domainname: pontus-demo.com
+    restart: on-failure
+    hostname: pontus-grafana
+    container_name: pontus-grafana.pontus-demo.com
+    depends_on:
+      - pontus-timescaledb
+
+    networks:
+      - pontusvision
+    env_file:
+      - secrets/PONTUS-GRAFANA
+
 
 networks:
   pontusvision:
