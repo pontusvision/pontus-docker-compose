@@ -208,7 +208,7 @@ services:
       "
 
   pontus-timescaledb:
-    image: "pontusvisiongdpr/timescaledb"
+    image: "pontusvisiongdpr/timescaledb:latest"
     domainname: pontus-demo.com
     restart: on-failure
     hostname: pontus-timescaledb
@@ -220,18 +220,36 @@ services:
 
 
   pontus-grafana:
-    image: "grafana/grafana:6.2.4"
+    image: "pontusvisiongdpr/grafana:latest"
     domainname: pontus-demo.com
     restart: on-failure
     hostname: pontus-grafana
     container_name: pontus-grafana.pontus-demo.com
     depends_on:
       - pontus-timescaledb
+    ports:
+      - "3000:3000"
 
     networks:
       - pontusvision
     env_file:
       - secrets/PONTUS-GRAFANA
+
+
+  pontus-postgrest:
+    image: "pontusvisiongdpr/postgrest:latest"
+    domainname: pontus-demo.com
+    restart: on-failure
+    hostname: pontus-postgrest
+    container_name: pontus-postgrest.pontus-demo.com
+    depends_on:
+      - pontus-timescaledb
+
+    networks:
+      - pontusvision
+    env_file:
+      - secrets/PONTUS-POSTGREST
+
 
 
 networks:
