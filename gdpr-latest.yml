@@ -89,6 +89,7 @@ services:
 
 
     depends_on:
+      - pontus-postgrest
       - graphdb-nifi
       - spacyapi
     networks:
