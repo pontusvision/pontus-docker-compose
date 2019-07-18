@@ -228,6 +228,7 @@ services:
     container_name: pontus-grafana.pontus-demo.com
     depends_on:
       - pontus-timescaledb
+      - pontus-lgpd
     ports:
       - "3000:3000"
 
@@ -235,6 +236,13 @@ services:
       - pontusvision
     env_file:
       - secrets/PONTUS-GRAFANA
+    entrypoint: >
+      bash -c "
+        getent hosts pontus-lgpd &&
+        while nc -l -p 18443 -k -c 'nc pontus-lgpd 18443' || true; do true; done &
+        /run.sh
+
+      "
 
 
   pontus-postgrest:
