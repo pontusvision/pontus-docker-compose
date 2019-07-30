@@ -230,8 +230,6 @@ services:
     depends_on:
       - pontus-timescaledb
       - pontus-lgpd
-    ports:
-      - "3000:3000"
 
     networks:
       - pontusvision
