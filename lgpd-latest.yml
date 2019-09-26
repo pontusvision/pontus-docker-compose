@@ -257,6 +257,19 @@ services:
     env_file:
       - secrets/PONTUS-POSTGREST
 
+  mysql:
+    image: mysql
+    hostname: mysql
+    domainname: pontus-demo.com
+    container_name: mysql.pontus-demo.com
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pa55word
+    networks:
+      - pontusvision
+
+
 
 
 networks:

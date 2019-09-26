@@ -246,6 +246,8 @@ services:
     container_name: pontus-extract-discovery-dataset.pontus-demo.com
     restart: on-failure
     privileged: true
+    ports: 
+      - "8288:8288"
     networks:
       - pontusvision
 

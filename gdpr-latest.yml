@@ -205,7 +205,7 @@ services:
          getent hosts pontus-comply-keycloak.pontus-demo.com
          getent hosts pontus-extract-discovery-backend.pontus-demo.com
          echo Waiting for pontus-nifi service start just to reduce the number of JVMs starting at once...;
-         nginx -g 'daemon off;'
+         nginx-debug -g 'daemon off;'
       "
 
   pontus-timescaledb:
@@ -257,6 +257,18 @@ services:
       - pontusvision
     env_file:
       - secrets/PONTUS-POSTGREST
+
+  mysql:
+    image: mysql
+    hostname: mysql
+    domainname: pontus-demo.com
+    container_name: mysql.pontus-demo.com
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pa55word
+    networks:
+      - pontusvision
 
 
 
