@@ -35,7 +35,7 @@ services:
 
 
   graphdb-nifi:
-    image: "pontusvisiongdpr/pontus-track-graphdb-nifi:latest"
+    image: "pontusvisiongdpr/pontus-track-graphdb-nifi-pt:latest"
     domainname: pontus-demo.com
     ports:
       - "8182:8183"
