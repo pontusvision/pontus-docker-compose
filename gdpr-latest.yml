@@ -47,6 +47,8 @@ services:
     privileged: false
     hostname: graphdb-nifi
     container_name: graphdb-nifi.pontus-demo.com
+    secrets:
+      - MAPPING_SALESFORCE_GRAPH
     depends_on:
       - elasticsearch
     networks:
@@ -297,5 +299,7 @@ secrets:
     file: secrets/WATSON_PASSWORD
   GOOGLE_CREDS_JSON:
     file: secrets/GOOGLE_CREDS_JSON
+  MAPPING_SALESFORCE_GRAPH:
+    file: secrets/MAPPING_SALESFORCE_GRAPH
 
 
