@@ -47,6 +47,8 @@ services:
     privileged: false
     hostname: graphdb-nifi
     container_name: graphdb-nifi.pontus-demo.com
+    secrets:
+      - MAPPING_SALESFORCE_GRAPH
     depends_on:
       - elasticsearch
     networks:
@@ -89,6 +91,7 @@ services:
 
 
     depends_on:
+      - pontus-postgrest
       - graphdb-nifi
       - spacyapi
     networks:
@@ -171,6 +174,7 @@ services:
       - "5005:8080"
     restart: on-failure
     privileged: true
+    hostname: pontus-comply-keycloak
     networks:
       - pontusvision
 
@@ -341,11 +345,75 @@ services:
     container_name: pontus-grafana.pontus-demo.com
     depends_on:
       - pontus-timescaledb
+      - pontus-lgpd
 
     networks:
       - pontusvision
     env_file:
       - secrets/PONTUS-GRAFANA
+    entrypoint: >
+      bash -c "
+        getent hosts pontus-lgpd &&
+        while nc -l -p 18443 -k -c 'nc pontus-lgpd 18443' || true; do true; done &
+        /run.sh
+
+      "
+
+
+  pontus-postgrest:
+    image: "pontusvisiongdpr/postgrest:latest"
+    domainname: pontus-demo.com
+    restart: on-failure
+    hostname: pontus-postgrest
+    container_name: pontus-postgrest.pontus-demo.com
+    depends_on:
+      - pontus-timescaledb
+
+    networks:
+      - pontusvision
+    env_file:
+      - secrets/PONTUS-POSTGREST
+
+  mysql:
+    image: mysql
+    hostname: mysql
+    domainname: pontus-demo.com
+    container_name: mysql.pontus-demo.com
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_DATABASE: jwdb 
+      MYSQL_PORT: 3306 
+      MYSQL_USER: joget
+      MYSQL_PASSWORD: joget
+      MYSQL_ROOT_PASSWORD: jwdb
+
+    networks:
+      - pontusvision
+
+  joget:
+    image: jogetworkflow/joget-community
+    hostname: joget
+    domainname: pontus-demo.com
+    container_name: joget.pontus-demo.com
+    depends_on:
+      - mysql
+    restart: always
+    ports:
+      - "4000:8080"
+    environment:
+      MYSQL_ROOT_PASSWORD: jwdb
+      MYSQL_HOST: mysql.pontus-demo.com 
+      MYSQL_DATABASE: jwdb 
+      MYSQL_PORT: 3306 
+      MYSQL_USER: joget
+      MYSQL_PASSWORD: joget
+
+    networks:
+      - pontusvision
+    
+
+
 
 
 networks:
@@ -373,5 +441,6 @@ secrets:
     file: secrets/WATSON_PASSWORD
   GOOGLE_CREDS_JSON:
     file: secrets/GOOGLE_CREDS_JSON
-
+  MAPPING_SALESFORCE_GRAPH:
+    file: secrets/MAPPING_SALESFORCE_GRAPH
 
