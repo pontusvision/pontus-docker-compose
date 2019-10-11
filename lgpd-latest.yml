@@ -338,7 +338,7 @@ services:
 
 
   pontus-grafana:
-    image: "pontusvisiongdpr/grafana:latest"
+    image: "pontusvisiongdpr/grafana-pt:latest"
     domainname: pontus-demo.com
     restart: on-failure
     hostname: pontus-grafana
@@ -398,6 +398,7 @@ services:
     container_name: joget.pontus-demo.com
     depends_on:
       - mysql
+      - pontus-nifi
     restart: always
     ports:
       - "4000:8080"
