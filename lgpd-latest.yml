@@ -387,31 +387,37 @@ services:
       MYSQL_USER: joget
       MYSQL_PASSWORD: joget
       MYSQL_ROOT_PASSWORD: jwdb
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 
     networks:
       - pontusvision
 
-  joget:
-    image: jogetworkflow/joget-community
-    hostname: joget
-    domainname: pontus-demo.com
-    container_name: joget.pontus-demo.com
-    depends_on:
-      - mysql
-      - pontus-nifi
-    restart: always
-    ports:
-      - "4000:8080"
-    environment:
-      MYSQL_ROOT_PASSWORD: jwdb
-      MYSQL_HOST: mysql.pontus-demo.com 
-      MYSQL_DATABASE: jwdb 
-      MYSQL_PORT: 3306 
-      MYSQL_USER: joget
-      MYSQL_PASSWORD: joget
-
-    networks:
-      - pontusvision
+#  joget:
+#    image: jogetworkflow/joget-community
+#    hostname: joget
+#    domainname: pontus-demo.com
+#    container_name: joget.pontus-demo.com
+#    depends_on:
+#      - mysql
+#
+#    restart: always
+#    ports:
+#      - "4000:8080"
+#    environment:
+#      MYSQL_ROOT_PASSWORD: jwdb
+#      MYSQL_HOST: mysql.pontus-demo.com 
+#      MYSQL_DATABASE: jwdb 
+#      MYSQL_PORT: 3306 
+#      MYSQL_USER: joget
+#      MYSQL_PASSWORD: joget
+#
+#    networks:
+#      - pontusvision
     
 
 
