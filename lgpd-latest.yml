@@ -8,7 +8,9 @@ services:
     restart: on-failure
     container_name: spacyapi.pontus-demo.com
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.1
+
 
 
   elasticsearch:
@@ -27,7 +29,8 @@ services:
       - cluster.name=docker-cluster
       - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.2
     ulimits:
       memlock:
         soft: -1
@@ -52,7 +55,8 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.3
     command: >
       /bin/bash -c "
         echo Waiting for elasticsearch service start...;
@@ -96,7 +100,8 @@ services:
       - mysql
       - spacyapi
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.4
     entrypoint: >
       /bin/bash -c "
         getent hosts spacyapi
@@ -133,7 +138,8 @@ services:
         wait %1
       "
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.5
 
 
 
@@ -162,7 +168,8 @@ services:
         #while [[ true ]]; do sleep 1; done
       "
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.6
 
 
 
@@ -175,9 +182,9 @@ services:
       - "5005:8080"
     restart: on-failure
     privileged: true
-    hostname: pontus-comply-keycloak
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.7
 
 
 
@@ -308,7 +315,8 @@ services:
     hostname: pontus-lgpd
     container_name: pontus-lgpd.pontus-demo.com
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.11
     depends_on:
       - pontus-formio-mongodb
       - pontus-formio
@@ -332,7 +340,8 @@ services:
     hostname: pontus-timescaledb
     container_name: pontus-timescaledb.pontus-demo.com
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.12
     env_file:
       - secrets/PONTUS-TIMESCALEDB
 
@@ -348,12 +357,15 @@ services:
       - pontus-lgpd
 
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.13
     env_file:
       - secrets/PONTUS-GRAFANA
     entrypoint: >
       bash -c "
         getent hosts pontus-lgpd &&
+        # we need to do this hack to redirect localhost:18443 to the pontus-lgpd gateway to get
+        # the JWT token.
         while nc -l -p 18443 -k -c 'nc pontus-lgpd 18443' || true; do true; done &
         /run.sh
 
@@ -370,7 +382,8 @@ services:
       - pontus-timescaledb
 
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.14
     env_file:
       - secrets/PONTUS-POSTGREST
 
@@ -397,7 +410,8 @@ services:
 
 
     networks:
-      - pontusvision
+      pontusvision:
+        ipv4_address: 172.28.1.15
 
 #  joget:
 #    image: jogetworkflow/joget-community
@@ -427,6 +441,10 @@ services:
 
 networks:
   pontusvision:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
 
 
 secrets:
