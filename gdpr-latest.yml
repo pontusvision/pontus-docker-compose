@@ -93,6 +93,9 @@ services:
       - WATSON_PASSWORD
       - GOOGLE_CREDS_JSON
 
+    volumes:
+      - "./nifi-nlp:/var/run/nifi-nlp"
+
 
     depends_on:
       - pontus-postgrest
