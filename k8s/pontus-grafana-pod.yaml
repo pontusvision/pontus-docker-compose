@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.network/pontusvision: "true"
+    io.kompose.service: pontus-grafana
+  name: pontus-grafana
+spec:
+  containers:
+  - command:
+    - bash
+    - -c
+    - |2+
+
+        getent hosts pontus-lgpd &&
+        # we need to do this hack to redirect localhost:18443 to the pontus-lgpd gateway to get
+        # the JWT token.
+        while nc -l -p 18443 -k -c 'nc pontus-lgpd 18443' || true; do true; done &
+        /run.sh
+
+    env:
+    - name: GF_PATHS_CONFIG
+      valueFrom:
+        #configMapKeyRef:
+        secretKeyRef:
+          name: pontus-grafana
+          key: GF_PATHS_CONFIG
+    image: pontusvisiongdpr/grafana:latest
+    name: pontus-grafana
+    resources: {}
+  hostname: pontus-grafana
+  restartPolicy: OnFailure
+  subdomain: pontus-demo-com
+status: {}
