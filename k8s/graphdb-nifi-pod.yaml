@@ -14,6 +14,9 @@ spec:
     - |2 
       #echo Waiting for elasticsearch service start...;\n  #while ! nc -z elasticsearch
       #do\n    #sleep 1;\n  #done;\n  echo Connected!;\n
+      echo "HEELLLLOOO"
+      /usr/bin/s3fs ${S3_BUCKET} ${MOUNT_POINT} -o uid=1000,gid=1000,use_cache=/tmp,url=https://s3.amazonaws.com,endpoint=${REGION},iam_role=${IAM_ROLE},allow_other,nosuid,nonempty,nodev,default_acl=${S3_ACL},retries=5 -d
+      echo "HEELLLLOOO"
       LD_LIBRARY_PATH=:/tmp
       /orientdb/bin/server.sh
     env:
@@ -23,7 +26,22 @@ spec:
         secretKeyRef:
           name: pontus-graphdb
           key: ORIENTDB_ROOT_PASSWORD
+    - name: AWS_ACCESS_KEY_ID
+      valueFrom:
+        #configMapKeyRef:
+        secretKeyRef:
+          name: pontus-graphdb
+          key: AWS_ACCESS_KEY_ID
+    - name: AWS_SECRET_ACCESS_KEY
+      valueFrom:
+        #configMapKeyRef:
+        secretKeyRef:
+          name: pontus-graphdb
+          key: AWS_SECRET_ACCESS_KEY
     image: pontusvisiongdpr/pontus-track-graphdb-odb-pt:latest
+    securityContext:
+      privileged: true        # cannot be changed, or Object Storage Service Bucket cannot be attached
+
     name: graphdb-nifi
     ports:
     - containerPort: 8183

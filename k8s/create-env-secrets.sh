@@ -15,7 +15,7 @@ for i in secrets/env/*; do
   done  
   echo "$COMMAND"
   if [[ "skip" != "$1" ]]; then
-    $COMMAND --dry-run -o yaml | kubectl apply -f -
+    $COMMAND --dry-run=client -o yaml | kubectl apply -f -
 
   fi
   cd $DIR
@@ -29,7 +29,7 @@ for i in secrets/*; do
     export COMMAND="kubectl create secret generic $SECRET_NAME --from-file=$SECRET_NAME"
     echo "$COMMAND"
     if [[ "skip" != "$1" ]]; then
-      $COMMAND --dry-run -o yaml | kubectl apply -f -
+      $COMMAND --dry-run=client -o yaml | kubectl apply -f -
     fi
     cd $DIR
   fi

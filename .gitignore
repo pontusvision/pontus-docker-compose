@@ -1,2 +1,5 @@
 create-secrets.sh
 secrets
+pontus-docker-compose.iml
+pontus-docker-compose.ipr
+pontus-docker-compose.iws

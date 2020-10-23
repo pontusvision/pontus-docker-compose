@@ -16,6 +16,7 @@ spec:
          getent hosts pontus-formio.pontus-demo-com
          getent hosts pontus-nifi.pontus-demo-com
          getent hosts pontus-comply-keycloak.pontus-demo-com
+         getent hosts pontus-comply-keycloak
          echo Waiting for pontus-nifi service start just to reduce the number of JVMs starting at once...;
          nginx -g 'daemon off;'
     image: pontusvisiongdpr/pontus-comply-nginx-lgpd:latest

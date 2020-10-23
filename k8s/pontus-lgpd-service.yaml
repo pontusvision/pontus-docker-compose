@@ -15,5 +15,6 @@ spec:
     targetPort: 18443
   selector:
     io.kompose.service: pontus-lgpd
+  type: LoadBalancer
 status:
   loadBalancer: {}

@@ -16,7 +16,9 @@ spec:
         getent hosts pontus-lgpd &&
         # we need to do this hack to redirect localhost:18443 to the pontus-lgpd gateway to get
         # the JWT token.
-        while nc -l -p 18443 -k -c 'nc pontus-lgpd 18443' || true; do true; done &
+        #rm -f /tmp/f; mkfifo /tmp/f
+        #while $(cat /tmp/f |nc pontus-lgpd 18443 | nc -l 127.0.0.1 18443 > /tmp/f) || true; do true; done &
+        while nc.traditional -l -p 18443 -k -c 'nc.traditional pontus-lgpd 18443' || true; do true; done &
         /run.sh
 
     env:
