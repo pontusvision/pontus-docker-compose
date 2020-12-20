@@ -16,7 +16,10 @@ To run the Pontus Vision LGPD / GDPR platform from kubernetes, please follow the
 ```
 ./tail-logs.sh
 ```
-
+6) to login, go to the following URL:
+```
+https://localhost:18443/gateway/sandbox/pvgdpr_gui
+```
 ## Secret Files
 Please create a directory structure similar to the following:
 ```
