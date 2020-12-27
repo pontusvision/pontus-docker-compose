@@ -33,7 +33,7 @@ spec:
             echo Waiting for vertex_labels... got this: $RES;
             echo Connected!;
             ../scripts/start.sh
-        image: pontusvisiongdpr/pontus-extract-nifi:latest
+        image: pontusvisiongdpr/pontus-extract-nifi:1.12.1
         name: pontus-nifi
         ports:
         - containerPort: 8080
